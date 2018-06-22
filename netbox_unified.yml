@@ -1,0 +1,81 @@
+---
+-  name: provision netbox web and database
+   hosts: netbox
+   vars:
+     install_dir: /srv
+     database_name: netbox_db
+     database_user: netbox_user
+     database_password: foobar
+     hostname: localhost
+   become: true
+   become_method: sudo
+   roles:
+     - name: netbox-db
+       netbox_database_name: "{{ database_name }}"
+       netbox_database_user: "{{ database_user }}"
+       netbox_database_password: "{{ database_password }}"
+
+     - name: netbox-app
+       netbox_install_directory: "{{ install_dir }}"
+       netbox_database_name: "{{ database_name }}"
+       netbox_database_user: "{{ database_user }}"
+       netbox_database_password: "{{ database_password }}"
+       netbox_allowed_hosts:
+         - "{{ hostname }}"
+         - "localhost:20443" # workaround for CSRF protection
+
+     - name: netbox-web
+       netbox_install_directory: "{{ install_dir }}"
+       ### This is a self-signed cert, make your own for production...
+       netbox_webserver_ssl_crt: |
+         -----BEGIN CERTIFICATE-----
+         MIIDoDCCAoigAwIBAgIJAIKhx6tqKvKMMA0GCSqGSIb3DQEBCwUAMGUxCzAJBgNV
+         BAYTAlVTMREwDwYDVQQIDAhNaWNoaWdhbjESMBAGA1UEBwwJQW5uIEFyYm9yMRsw
+         GQYDVQQKDBJTdHJheWxpZ2h0IFByb2plY3QxEjAQBgNVBAMMCWxvY2FsaG9zdDAe
+         Fw0xODA2MjIxNTMxNTVaFw0xOTA2MjIxNTMxNTVaMGUxCzAJBgNVBAYTAlVTMREw
+         DwYDVQQIDAhNaWNoaWdhbjESMBAGA1UEBwwJQW5uIEFyYm9yMRswGQYDVQQKDBJT
+         dHJheWxpZ2h0IFByb2plY3QxEjAQBgNVBAMMCWxvY2FsaG9zdDCCASIwDQYJKoZI
+         hvcNAQEBBQADggEPADCCAQoCggEBAL3Qs5M4NWQzth8DzmkSN/EpvJ9Nu4/K1td2
+         2UCXaepD9Eei8ZSYmCORLo0sAE8L0KKEaJLIfPqxbFYQgwi2ABP/WoyAwtdi4ziI
+         kK1MudLe792Eor56AXJOh/4EqC6Qt0ioIimTqi21pGpWoFhn+MqBG5Xz/j1uCw+n
+         n0CGbmfu5ZfVWLRY3ltCgFtxzP5lI1RMkPx8VgY0+q/qKuMqv0nE6M7GM4lftwqk
+         Hk08H/c53kZQ0mqmIlhJL3OMqQ5DE2ZFErvUVl2kk685rh4OmCh6Prxd17ejta/1
+         iiu3HUTxr1uQk4JozNUcT3zAhkKJ4J/jd12TqDOXIXjGwifYBYECAwEAAaNTMFEw
+         HQYDVR0OBBYEFNbBXjvK5ZEWcL41cf85y1Al9gJUMB8GA1UdIwQYMBaAFNbBXjvK
+         5ZEWcL41cf85y1Al9gJUMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQAD
+         ggEBAAiTttrsAXEJ13JwdsOVjL5v8or4nK/lIMqe9I5HJykdiswaMzKS644f4O8P
+         ZGDBxErYDFynn+Hmt8R2CpKPjle4HMKp5t2WaD1YwVxc6edr0xoqCUZx8ucwJWY7
+         uDeQlTpuQwBX6LhmCc8GLElCSJUGph4sJORI1dwQlu6kSjOE3k3pOfUhHAI4Q/Dg
+         VkA5xxc3gN5vuViTrNYotF7SNtJyhVQHSb5fHAkuks9tGVrqsaBWOph4yNA9c9qs
+         ZDVMejcvFPD64FGWKzredJKlEQ4op7EGeR37GdOSmgdupNtdvKUoURcb4jLFb/8R
+         ud6ZnpRApeB/t3vSMH8MWawS6aI=
+         -----END CERTIFICATE-----
+       netbox_webserver_ssl_key: |
+         -----BEGIN PRIVATE KEY-----
+         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC90LOTODVkM7Yf
+         A85pEjfxKbyfTbuPytbXdtlAl2nqQ/RHovGUmJgjkS6NLABPC9CihGiSyHz6sWxW
+         EIMItgAT/1qMgMLXYuM4iJCtTLnS3u/dhKK+egFyTof+BKgukLdIqCIpk6ottaRq
+         VqBYZ/jKgRuV8/49bgsPp59Ahm5n7uWX1Vi0WN5bQoBbccz+ZSNUTJD8fFYGNPqv
+         6irjKr9JxOjOxjOJX7cKpB5NPB/3Od5GUNJqpiJYSS9zjKkOQxNmRRK71FZdpJOv
+         Oa4eDpgoej68Xde3o7Wv9Yortx1E8a9bkJOCaMzVHE98wIZCieCf43ddk6gzlyF4
+         xsIn2AWBAgMBAAECggEAQR7cvOFHz/y9up4/rmSFtMMw5yZv9sEMPBeWKUbJG4n8
+         wKbyYpyHdYxVgDFcWcIf7eGnTtRhrFA6brxzeAWYuUOd+R4jumk+syKHIC12gxXh
+         DQp4GwkYffLbTRaj7HXRq6ejMMhsVgo/Qgw+LpZdEHyCzktLKiAaw2AqjqSQNC92
+         F/5KRLZVJoLG3KN4Y2iex1gkF++M0PjG2so6h3fI2OoOMxFRc9hBIkXufgjkZ9Ox
+         UL716wwH5OTn64Wvb6cqBWrZ/CLCsKBEZJ/FW1mxNT1c5qdaUPWC31ijpcbuzj5R
+         7weBmXtN2qMTPvuXMahnYRpewVSPdXijeKTjrYFdwQKBgQDrcrDnEZMuz+iyNFOn
+         2qJC6E2q2q8swKdXkwBHmnh30vylRVG3dgx4gv++ow6A5afmD7KXigRnUUGoxDH+
+         VUM2TxfjQFvPJX3KaeVNFi8EjF+/DfKmNoLOFZnrKo1iP09WBc8wbPPdBtN14mw8
+         n/zelYEo5lHQNJGYESM1WlePnQKBgQDOYk2LPh0+oeVKFVRI28qAx+ou3TeK0eZy
+         7s+vb6fBSO62bi4RiTfFN/9FEVdbYf+3ZmPbwoFcd/fZkbuMvWM4cbUAxCZV5xiQ
+         pm0tfEsZM3X4pQir96J6VZe//v462WYMH5Z6WGU7VyHX5PFXpez00Ne4IVMM2Vsl
+         1Qe99mNSNQKBgQCs1SgetrwAJQZ/qgGuucNasgQxYw4sH8+3bWVLKo08CFkFSPlP
+         XwyQejkZy8AdxneVXfiPXPUWkoNMS5kXRads+mpimx/J04+fQlTcXWhuQk0WhjqU
+         4HbsqNav1jCq6iZm0yTgO1pX6WbYpjkl15tcGQsS5t8voyctJYde5s5X0QKBgC9t
+         ze5C/wuGvx/QWQdJY3dG+h18/yeq5y/gi+AAY+f6b8mC9plXFHcBUGu5+X5pvg+S
+         uz4kq//pHg9k+1nzqBqvnu4nJbw2GKIdbRe36bZH6kOTAbQre65rfy1DV3+EuHvu
+         wnEpYVJKyt9HoOMIobT9TaXmGqToSpceJuJT/i1FAoGAJM5bgdbLbhKIiaH86/+n
+         jHRaWMnjKmaF/O+FvIU3whukUP/NXdvwYRy1sFPlypCDUiCKcFh0ZZmJHe6e9Iwr
+         bgjs58jMsTxHl90iEn9yAu4PjMD/JM1j1qxu9bhfpR4LaIwHPLudHluWP8BJQUto
+         170GRzDyAxTwzX3babSCdq0=
+         -----END PRIVATE KEY-----
