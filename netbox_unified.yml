@@ -26,6 +26,7 @@
 
      - name: netbox-web
        netbox_install_directory: "{{ install_dir }}"
+       netbox_webserver_name: "{{ hostname }}"
        ### This is a self-signed cert, make your own for production...
        netbox_webserver_ssl_crt: |
          -----BEGIN CERTIFICATE-----
