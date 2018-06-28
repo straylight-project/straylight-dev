@@ -6,7 +6,6 @@ Vagrant.configure("2") do |config|
         netbox_unified.vm.box = "ubuntu/bionic64"
         netbox_unified.vm.hostname = "netbox-unified"
         netbox_unified.vm.network "forwarded_port", guest: 80,  host: 20080, host_ip: "127.0.0.1"
-        netbox_unified.vm.network "forwarded_port", guest: 80,  host: 20080, host_ip: "127.0.0.1"
         netbox_unified.vm.network "forwarded_port", guest: 443, host: 20443, host_ip: "127.0.0.1"
         netbox_unified.vm.provision "ansible" do |ansible|
             ansible.groups = {
