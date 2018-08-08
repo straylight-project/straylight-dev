@@ -16,6 +16,7 @@
       netbox_database_password: "{{ database_password }}"
 
     - name: netbox-app
+      netbox_version: "2.4.2"
       netbox_install_directory: "{{ install_dir }}"
       netbox_database_name: "{{ database_name }}"
       netbox_database_user: "{{ database_user }}"
